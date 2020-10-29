@@ -2,7 +2,6 @@ import glob
 import os
 import functools
 from .base_handler import BaseHandler
-from convert import SETTINGS
 
 
 class FileSystemHandler(BaseHandler):
@@ -16,15 +15,17 @@ class FileSystemHandler(BaseHandler):
         :param error_types: (list) List of the string names of the types of errors that can occur.
         """
 
-        # self.current_dir = os.getcwd()
         self.error_types = error_types
         self.n_facets = n_facets
         self.sep = sep
-        # self.success_dir = SETTINGS.SUCCESS_DIR.format(current_directory=self.current_dir)
-        # self.failure_dir = SETTINGS.FAILURE_DIR.format(current_directory=self.current_dir)
-        self.success_dir = SETTINGS.SUCCESS_DIR
-        self.failure_dir = SETTINGS.FAILURE_DIR
 
+        base_log_dir = os.environ.get("ABCUNIT_LOG_DIR")
+        if not base_log_dir:
+            raise ValueError('Please create the environment variable ABCUNIT_LOG_DIR,'
+                            'and assign it the base path to where you want output log files')
+        # could put this in try to check formatting but probably less needed
+        self.success_dir = os.path.join(base_log_dir, 'success')
+        self.failure_dir = os.path.join(base_log_dir, 'failure')
         
     def validate(func):
         """

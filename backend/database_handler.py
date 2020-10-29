@@ -1,23 +1,34 @@
 import psycopg2
+import os
 from .base_handler import BaseHandler
 
 class DataBaseHandler(BaseHandler):
 
-    def __init__(self, connection_info, error_types, table_name='results'):
+    def __init__(self, error_types, table_name='results'):
         """ 
         Constructs an instace of the database handler.
         
-        :param connection_info: (str) Connection string in the psycopg2 format,
-        "dbname=<db_name> user=<user_name> password=<password>".
         :param error_types: (list) List of the string names of the types of errors that can occur.
         :param table_name: (str) Optional string for the name of the table created (default 'results')
         """
 
         self.error_types = error_types
-        self.conn = psycopg2.connect(connection_info)
+        connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
+        if not connection_info:
+            raise KeyError('Please create environment variable ABCUNIT_DB_SETTINGS'
+                            'in for format of "dbname=<db_name> user=<user_name>'
+                            'host=<host_name> password=<password>"')
+        try:
+            self.conn = psycopg2.connect(connection_info)
+        except psycopg2.Error as err:
+            print(err)
+            raise ValueError('ABCUNIT_DB_SETTINGS string is incorect. Shoulc be'
+                            'in for format of "dbname=<db_name> user=<user_name>'
+                            'host=<host_name> password=<password>"')
         self.cur = self.conn.cursor()
         self.table_name = table_name
         self._create_table()
+
 
     def _create_table(self):
         """
