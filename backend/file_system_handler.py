@@ -3,7 +3,6 @@ import os
 import functools
 from .base_handler import BaseHandler
 
-
 class FileSystemHandler(BaseHandler):
 
     def __init__(self, n_facets, sep, error_types):
