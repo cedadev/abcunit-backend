@@ -2,11 +2,12 @@ import pytest
 from backend.file_system_handler import FileSystemHandler
 
 fs_handler = None
+base_dir = '/home/users/jhaigh0/work/abcunit_backend/abcunit-backend/logs'
 
 def setup_module():
     global fs_handler
     print("SETTING UP")
-    fs_handler = FileSystemHandler(5, '.', ['bad_data', 'bad_num', 'no_output'])
+    fs_handler = FileSystemHandler(base_dir, 5, '.', ['bad_data', 'bad_num', 'no_output'])
 
 def teardown_module():
     print("TEARING DOWN")

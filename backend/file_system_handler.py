@@ -5,10 +5,11 @@ from .base_handler import BaseHandler
 
 class FileSystemHandler(BaseHandler):
 
-    def __init__(self, n_facets, sep, error_types):
+    def __init__(self, base_log_dir, n_facets, sep, error_types):
         """ 
         Constructs an instace of the file system handler.
         
+        :param base_log_dir: (str) Path to base directory for log files
         :param n_facets: (int) Number of directories used to define a job id
         :param sep: (str) Character used to separate facet names in a job id 
         :param error_types: (list) List of the string names of the types of errors that can occur.
@@ -18,10 +19,6 @@ class FileSystemHandler(BaseHandler):
         self.n_facets = n_facets
         self.sep = sep
 
-        base_log_dir = os.environ.get("ABCUNIT_LOG_DIR")
-        if not base_log_dir:
-            raise ValueError('Please create the environment variable ABCUNIT_LOG_DIR,'
-                            'and assign it the base path to where you want output log files')
         # could put this in try to check formatting but probably less needed
         self.success_dir = os.path.join(base_log_dir, 'success')
         self.failure_dir = os.path.join(base_log_dir, 'failure')

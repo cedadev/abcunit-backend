@@ -22,15 +22,15 @@ Requires an evironment variable `$ABCUNIT_DB_SETTINGS` to be set to `"dbname=<na
 ## File Systen Backend ##
 
 ```
-FilesystemHandler(int n_facets, str sep, [str] error_types)
+FilesystemHandler(str log_base_dir, int n_facets, str sep, [str] error_types)
 ```
+
+NOTE: change to where x is y ect
 
 Uses the file system to create log files marking success and failures, categorised by directory structure;
 
 ```
-$ABCUNIT_LOG_DIR/sucess/facet1/facet2/facet3
+<log_base_dir>/success/facet1/facet2/facet3
 
-$ABCUNIT_LOG_DIR/failure/error_type/facet1/facet2/facet3
+<log_base_dir>/failure/error_type/facet1/facet2/facet3
 ```
-
-Set `$ABCUNIT_LOG_DIR` before using.
