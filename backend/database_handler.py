@@ -2,69 +2,71 @@ import psycopg2
 import os
 from .base_handler import BaseHandler
 
+
 class DataBaseHandler(BaseHandler):
 
     def __init__(self, error_types, table_name='results'):
-        """ 
+        """
         Constructs an instace of the database handler.
-        
-        :param error_types: (list) List of the string names of the types of errors that can occur.
-        :param table_name: (str) Optional string for the name of the table created (default 'results')
+
+        :param error_types: (list) List of the string names of the types
+        of errors that can occur.
+        :param table_name: (str) Optional string for the name of the
+        table created (default 'results')
         """
 
         self.error_types = error_types
         connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
         if not connection_info:
             raise KeyError('Please create environment variable ABCUNIT_DB_SETTINGS'
-                            'in for format of "dbname=<db_name> user=<user_name>'
-                            'host=<host_name> password=<password>"')
+                           'in for format of "dbname=<db_name> user=<user_name>'
+                           'host=<host_name> password=<password>"')
         try:
             self.conn = psycopg2.connect(connection_info)
         except psycopg2.Error as err:
             print(err)
             raise ValueError('ABCUNIT_DB_SETTINGS string is incorect. Shoulc be'
-                            'in for format of "dbname=<db_name> user=<user_name>'
-                            'host=<host_name> password=<password>"')
+                             'in for format of "dbname=<db_name> user=<user_name>'
+                             'host=<host_name> password=<password>"')
         self.cur = self.conn.cursor()
         self.table_name = table_name
         self._create_table()
 
-
     def _create_table(self):
         """
-         Creates a table called <self.table_name> with primary key id varchar(255) and 
-        result varchar(255)
+        Creates a table called <self.table_name> with primary key id varchar(255)
+        and result varchar(255)
          """
 
-        self.cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}' \
-             '(id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL);')
+        self.cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}'
+                         '(id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL);')
         self.conn.commit()
 
     def _delete_table(self):
-        """ 
-        Drops the database table 
+        """
+        Drops the database table
         """
 
         self.cur.execute(f"DROP TABLE {self.table_name};")
         self.conn.commit()
 
     def get_result(self, identifier):
-        """ 
-        Selects the result of the job with the id passed and returns it 
-        
+        """
+        Selects the result of the job with the id passed and returns it
+
         :param identifier: (str) Id of the job result
-        :return: String result of job 
+        :return: String result of job
         """
 
         query = f"SELECT result FROM {self.table_name} " \
-        f"WHERE id='{identifier}';"
+                f"WHERE id='{identifier}';"
         self.cur.execute(query)
         if self.cur.rowcount > 0:
             return self.cur.fetchone()[0]
         return None
 
     def get_all_results(self):
-        """ 
+        """
         :return: Dictionary with job ids as keys and results as values
         """
 
@@ -76,7 +78,7 @@ class DataBaseHandler(BaseHandler):
         return result_dict
 
     def get_successful_runs(self):
-        """ 
+        """
         :return: List of job ids which ran successfully
         """
 
@@ -87,7 +89,8 @@ class DataBaseHandler(BaseHandler):
 
     def get_failed_runs(self):
         """
-        :return: Dictionary with error types as keys and lists of job ids as values
+        :return: Dictionary with error types as keys and lists of
+        job ids as values
         """
 
         query = f"SELECT id, result FROM {self.table_name} " \
@@ -99,9 +102,9 @@ class DataBaseHandler(BaseHandler):
         return failures
 
     def delete_result(self, identifier):
-        """ 
+        """
         Deletes job id and result from the database
-        
+
         :param identifier: (str) Id of the job results
         """
 
@@ -119,13 +122,13 @@ class DataBaseHandler(BaseHandler):
         self.conn.commit()
 
     def ran_succesfully(self, identifier):
-        """ 
-        :param identifier: (str) Id of the job result 
+        """
+        :param identifier: (str) Id of the job result
         :return: Boolean on if job ran successfully
         """
 
         query = f"SELECT result FROM {self.table_name} " \
-        f"WHERE id='{identifier}';"
+                f"WHERE id='{identifier}';"
         self.cur.execute(query)
         result = self.cur.fetchone()
         if result is not None:
@@ -163,7 +166,7 @@ class DataBaseHandler(BaseHandler):
     def insert_success(self, identifier):
         """
         Inserts a value into the table with a given id and the result 'success'
-        
+
         :param identifier: (str) Id of the job result
         """
 
@@ -174,12 +177,14 @@ class DataBaseHandler(BaseHandler):
 
     def insert_failure(self, identifier, error_type):
         """
-        Inserts a value into the table with a given id and the result te given error type
-        
+        Inserts a value into the table with a given id and the result
+        (one of the given error types)
+
         :param identifier: (str) Id of the job result
-        :param error_type: (str) Erroneous result of the job, from the error_types list
+        :param error_type: (str) Erroneous result of the job, from the
+        error_types list
         """
-        
+
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', '{error_type}');"
         self.cur.execute(query)

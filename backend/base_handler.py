@@ -8,12 +8,12 @@ class BaseHandler(object):
         raise NotImplementedError
 
     def get_all_results(self):
-        """ Returns a dictionary of all ensembles 
+        """ Returns a dictionary of all ensembles
         and their respective result """
         raise NotImplementedError
 
     def get_successful_runs(self):
-        """ Returns a list of the names of all 
+        """ Returns a list of the names of all
         successful runs """
         raise NotImplementedError
 
@@ -57,6 +57,6 @@ class BaseHandler(object):
 
     def close(self):
         """ Optional method for implementations that
-        need to close a conection (e.g a database). 
+        need to close a conection (e.g a database).
         Runs 'pass' by default """
         pass
