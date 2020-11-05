@@ -21,7 +21,6 @@ class FileSystemHandler(BaseHandler):
         self.n_facets = n_facets
         self.sep = sep
 
-        # could put this in try to check formatting but probably less needed
         self.success_dir = os.path.join(base_log_dir, 'success')
         self.failure_dir = os.path.join(base_log_dir, 'failure')
 
