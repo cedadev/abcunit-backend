@@ -1,33 +1,34 @@
 
 class BaseHandler(object):
     """ Ineterface class to define base methods for a result handler
-    class which deals with the output of job results """
+    class """
 
     def get_result(self, identifier):
-        """ Returns a result given its identifier """
+        """ Returns the value of a result
+        given its identifier """
         raise NotImplementedError
 
     def get_all_results(self):
-        """ Returns a dictionary of all ensembles
-        and their respective result """
+        """ Returns a dictionary of all job identifiers mapped to
+        their respective results """
         raise NotImplementedError
 
     def get_successful_runs(self):
-        """ Returns a list of the names of all
+        """ Returns a list of the identifiers of all
         successful runs """
         raise NotImplementedError
 
     def get_failed_runs(self):
-        """ Returns a dictionary of error types and
-        lists of jobs which result in them """
+        """ Returns a dictionary of error types mapped to
+        lists of job identifiers which result in them """
         raise NotImplementedError
 
     def delete_result(self, identifier):
-        """ Deletes a result given its identifier """
+        """ Deletes a result entry given its identifier """
         raise NotImplementedError
 
     def delete_all_results(self):
-        """ Deletes all results """
+        """ Deletes all result entries """
         raise NotImplementedError
 
     def ran_succesfully(self, identifier):
@@ -36,7 +37,7 @@ class BaseHandler(object):
         raise NotImplementedError
 
     def count_results(self):
-        """ Returns the number of results """
+        """ Returns the total number of results """
         raise NotImplementedError
 
     def count_successes(self):

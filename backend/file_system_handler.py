@@ -8,13 +8,11 @@ class FileSystemHandler(BaseHandler):
 
     def __init__(self, base_log_dir, n_facets, sep, error_types):
         """
-        Constructs an instace of the file system handler.
-
-        :param base_log_dir: (str) Path to base directory for log files
-        :param n_facets: (int) Number of directories used to define a job id
-        :param sep: (str) Character used to separate facet names in a job id
-        :param error_types: (list) List of the string names of the types of
-        errors that can occur.
+        :param base_log_dir: (str) Path to top level directory for logs
+        :param n_facets: (int) Number of facets used to describe each unit result
+        :param sep: (str) Separator used for a result identifier
+        :param error_types: (str list) List of the string names of the different
+        types of errors that you want to log
         """
 
         self.error_types = error_types
@@ -26,7 +24,7 @@ class FileSystemHandler(BaseHandler):
 
     def validate(func):
         """
-        Decorator to check an identifier is of the correct format
+        Decorator to check if an identifier is of the correct format
         """
 
         @functools.wraps(func)
@@ -39,10 +37,10 @@ class FileSystemHandler(BaseHandler):
 
     def _path_to_identifier(self, path):
         """
-        Given a full path to a result returns its job id
+        Given a full path to a result returns its identifier
 
         :param path: (str) Path to result file
-        :return: Job id
+        :return: (str) Job identifier
         """
 
         # Getting the last n_facets number of items in the path and joining
@@ -55,9 +53,9 @@ class FileSystemHandler(BaseHandler):
         """
         Given an identifier and a result, return a full path to its result file
 
-        :param identifier: (str) Id of the job result
+        :param identifier: (str) Identifier of the job result
         :param result: (str) Result of the job
-        :return: Path to result file
+        :return: (str) Path to result file
         """
 
         id_path = identifier.replace(self.sep, os.sep)
@@ -69,10 +67,10 @@ class FileSystemHandler(BaseHandler):
     @validate
     def get_result(self, identifier):
         """
-        Finds the result of the job with the id passed and returns it
+        Returns the value of a result given its identifier
 
-        :param identifier: (str) Id of the job result
-        :return: String result of job
+        :param identifier: (str) Identifier of the job
+        :return: (str) Result of job
         """
 
         path = self._identifier_to_path(identifier, 'success')
@@ -88,7 +86,8 @@ class FileSystemHandler(BaseHandler):
 
     def get_all_results(self):
         """
-        :return: Dictionary with job ids as keys and results as values
+        :return: (dict) Dictionary of all job identifiers mapped to
+        their respective results
         """
 
         results = {}
@@ -104,7 +103,8 @@ class FileSystemHandler(BaseHandler):
 
     def get_successful_runs(self):
         """
-        :return: List of job ids which ran successfully
+        :return: (str list) Returns a list of the identifiers of all
+        successful runs
         """
 
         glob_pattern = os.path.join(self.success_dir, os.sep.join(['*' for _ in range(self.n_facets)]))
@@ -113,8 +113,8 @@ class FileSystemHandler(BaseHandler):
 
     def get_failed_runs(self):
         """
-        :return: Dictionary with error types as keys and lists of
-        job ids as values
+        :return: (dict) Dictionary of error types mapped to
+        lists of job identifiers which result in them
         """
 
         failures = {}
@@ -130,7 +130,7 @@ class FileSystemHandler(BaseHandler):
         """
         Deletes result file from the file system given its identifier
 
-        :param identifier: (str) Id of the job result
+        :param identifier: (str) Identifier of the job
         """
 
         path = self._identifier_to_path(identifier, 'success')
@@ -144,7 +144,8 @@ class FileSystemHandler(BaseHandler):
 
     def delete_all_results(self):
         """
-        Deletes all result files in the file system
+        Deletes all result files in the file system under the
+        base_log_dir
         """
 
         success_pattern = os.path.join(self.success_dir, os.sep.join(['*' for _ in range(self.n_facets)]))
@@ -162,8 +163,11 @@ class FileSystemHandler(BaseHandler):
     @validate
     def ran_succesfully(self, identifier):
         """
-        :param identifier: (str) Id of the job result
-        :return: Boolean on if job ran successfully
+        Returns true / false on whether the result with this
+        identifier is successful
+
+        :param identifier: (str) Identifier of the job result
+        :return: (bool) Boolean on if job ran successfully
         """
 
         path = self._identifier_to_path(identifier, 'success')
@@ -171,21 +175,21 @@ class FileSystemHandler(BaseHandler):
 
     def count_results(self):
         """
-        :return: Int number of jobs that have been run
+        :return: (int) Number of results in the table
         """
 
         return len(self.get_all_results())
 
     def count_successes(self):
         """
-        :return: Int number of jobs that have ran successfully
+        :return: (int) Number of successful result files
         """
 
         return len(self.get_successful_runs())
 
     def count_failures(self):
         """
-        :return: Int number of jobs that have failed
+        :return: (int) Number of failure result files
         """
 
         size = 0
@@ -199,7 +203,7 @@ class FileSystemHandler(BaseHandler):
         """
         Creates a successful result file with the identifier passed
 
-        :param identifier: (str) Id of the job result
+        :param identifier: (str) Identifier of the job
         """
 
         path = self._identifier_to_path(identifier, 'success')
@@ -212,10 +216,12 @@ class FileSystemHandler(BaseHandler):
     @validate
     def insert_failure(self, identifier, error_type):
         """
-        Creates a result file using the identifier and error type passed
+        Creates a failure result file using the identifier
+        and error type parsed
 
-        :param identifier: (str) Id of the job result
-        :param error_type: (str) Erroneous result of the job, from the error_types list
+        :param identifier: (str) Identifier of the job
+        :param error_type: (str) Result of the job, from the
+        error_types list
         """
 
         path = self._identifier_to_path(identifier, error_type)

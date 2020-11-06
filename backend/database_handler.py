@@ -7,12 +7,10 @@ class DataBaseHandler(BaseHandler):
 
     def __init__(self, error_types, table_name='results'):
         """
-        Constructs an instace of the database handler.
-
-        :param error_types: (list) List of the string names of the types
-        of errors that can occur.
-        :param table_name: (str) Optional string for the name of the
-        table created (default 'results')
+        :param error_types: (str list) List of the string names of the
+        different types of errors that you want to log
+        :param table_name: (str) Optional string name of the table logs
+        will be insert into (default is 'results')
         """
 
         self.error_types = error_types
@@ -35,7 +33,7 @@ class DataBaseHandler(BaseHandler):
     def _create_table(self):
         """
         Creates a table called <self.table_name> with primary key id varchar(255)
-        and result varchar(255)
+        and result varchar(255), if one does not already exist
          """
 
         self.cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}'
@@ -52,10 +50,11 @@ class DataBaseHandler(BaseHandler):
 
     def get_result(self, identifier):
         """
-        Selects the result of the job with the id passed and returns it
+        Selects the result of the job with the identifier parsed
+        and returns it
 
-        :param identifier: (str) Id of the job result
-        :return: String result of job
+        :param identifier: (str) Identifier of the job result
+        :return: (str) Result of job
         """
 
         query = f"SELECT result FROM {self.table_name} " \
@@ -67,7 +66,8 @@ class DataBaseHandler(BaseHandler):
 
     def get_all_results(self):
         """
-        :return: Dictionary with job ids as keys and results as values
+        :return: (dict) Dictionary of all job identifiers mapped to
+        their respective results
         """
 
         query = f"SELECT * FROM {self.table_name}"
@@ -79,7 +79,8 @@ class DataBaseHandler(BaseHandler):
 
     def get_successful_runs(self):
         """
-        :return: List of job ids which ran successfully
+        :return: (str list) Returns a list of the identifiers of all
+        successful runs
         """
 
         query = f"SELECT id FROM {self.table_name} " \
@@ -89,8 +90,8 @@ class DataBaseHandler(BaseHandler):
 
     def get_failed_runs(self):
         """
-        :return: Dictionary with error types as keys and lists of
-        job ids as values
+        :return: (dict) Dictionary of error types mapped to
+        lists of job identifiers which result in them
         """
 
         query = f"SELECT id, result FROM {self.table_name} " \
@@ -103,9 +104,10 @@ class DataBaseHandler(BaseHandler):
 
     def delete_result(self, identifier):
         """
-        Deletes job id and result from the database
+        Deletes entry specified by the given identifier
+        from the database
 
-        :param identifier: (str) Id of the job results
+        :param identifier: (str) Identifier of the job
         """
 
         query = f"DELETE FROM {self.table_name} " \
@@ -115,7 +117,7 @@ class DataBaseHandler(BaseHandler):
 
     def delete_all_results(self):
         """
-        Deletes all entries in the database
+        Deletes all entries from the table
         """
 
         self.cur.execute(f"DELETE FROM {self.table_name};")
@@ -123,8 +125,11 @@ class DataBaseHandler(BaseHandler):
 
     def ran_succesfully(self, identifier):
         """
-        :param identifier: (str) Id of the job result
-        :return: Boolean on if job ran successfully
+        Returns true / false on whether the result with this
+        identifier is successful
+
+        :param identifier: (str) Identifier of the job result
+        :return: (bool) Boolean on if job ran successfully
         """
 
         query = f"SELECT result FROM {self.table_name} " \
@@ -137,7 +142,7 @@ class DataBaseHandler(BaseHandler):
 
     def count_results(self):
         """
-        :return: Int number of jobs that have been run
+        :return: (int) Number of results in the table
         """
 
         self.cur.execute(f"SELECT COUNT(*) FROM {self.table_name};")
@@ -145,7 +150,7 @@ class DataBaseHandler(BaseHandler):
 
     def count_successes(self):
         """
-        :return: Int number of jobs that have ran successfully
+        :return: (int) Number of successfull results in the table
         """
 
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
@@ -155,7 +160,7 @@ class DataBaseHandler(BaseHandler):
 
     def count_failures(self):
         """
-        :return: Int number of jobs that have failed
+        :return: (int) Number of failed results in the table
         """
 
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
@@ -165,9 +170,10 @@ class DataBaseHandler(BaseHandler):
 
     def insert_success(self, identifier):
         """
-        Inserts a value into the table with a given id and the result 'success'
+        Inserts an entry into the table with a given identifier
+        and the result 'success'
 
-        :param identifier: (str) Id of the job result
+        :param identifier: (str) Identifier of the job
         """
 
         query = f"INSERT INTO {self.table_name} " \
@@ -177,11 +183,11 @@ class DataBaseHandler(BaseHandler):
 
     def insert_failure(self, identifier, error_type):
         """
-        Inserts a value into the table with a given id and the result
-        (one of the given error types)
+        Inserts an entry into the table with a given identifier
+        and result from error_types
 
-        :param identifier: (str) Id of the job result
-        :param error_type: (str) Erroneous result of the job, from the
+        :param identifier: (str) Identifier of the job
+        :param error_type: (str) Result of the job, from the
         error_types list
         """
 
