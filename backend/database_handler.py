@@ -23,7 +23,7 @@ class DataBaseHandler(BaseHandler):
             self.conn = psycopg2.connect(connection_info)
         except psycopg2.Error as err:
             print(err)
-            raise ValueError('ABCUNIT_DB_SETTINGS string is incorect. Shoulc be'
+            raise ValueError('ABCUNIT_DB_SETTINGS string is incorrect. Should be'
                              'in for format of "dbname=<db_name> user=<user_name>'
                              'host=<host_name> password=<password>"')
         self.cur = self.conn.cursor()
@@ -123,7 +123,7 @@ class DataBaseHandler(BaseHandler):
         self.cur.execute(f"DELETE FROM {self.table_name};")
         self.conn.commit()
 
-    def ran_succesfully(self, identifier):
+    def ran_successfully(self, identifier):
         """
         Returns true / false on whether the result with this
         identifier is successful

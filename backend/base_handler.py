@@ -1,6 +1,6 @@
 
 class BaseHandler(object):
-    """ Ineterface class to define base methods for a result handler
+    """ Interface class to define base methods for a result handler
     class """
 
     def get_result(self, identifier):
@@ -31,7 +31,7 @@ class BaseHandler(object):
         """ Deletes all result entries """
         raise NotImplementedError
 
-    def ran_succesfully(self, identifier):
+    def ran_successfully(self, identifier):
         """ Returns true / false on whether the result with this
         identifier is successful """
         raise NotImplementedError
@@ -58,6 +58,6 @@ class BaseHandler(object):
 
     def close(self):
         """ Optional method for implementations that
-        need to close a conection (e.g a database).
+        need to close a connection (e.g a database).
         Runs 'pass' by default """
         pass

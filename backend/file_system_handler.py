@@ -161,7 +161,7 @@ class FileSystemHandler(BaseHandler):
             os.unlink(failure_file)
 
     @validate
-    def ran_succesfully(self, identifier):
+    def ran_successfully(self, identifier):
         """
         Returns true / false on whether the result with this
         identifier is successful
@@ -230,4 +230,4 @@ class FileSystemHandler(BaseHandler):
         if not os.path.isdir(dr):
             os.makedirs(dr)
         with open(path, 'w') as writer:
-            writer.write(f'{error_type} has occured!')
+            writer.write(f'{error_type} has occurred!')

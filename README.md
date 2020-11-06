@@ -27,11 +27,11 @@ Connects to an existing database and creates a table to store results;
 
 <br/>
 
-Requires an evironment variable `$ABCUNIT_DB_SETTINGS` to be set to `"dbname=<name> user=<user> host=<host> password=<pwd>"` (Connection string for `psycopg2`).
+Requires an environment variable `$ABCUNIT_DB_SETTINGS` to be set to `"dbname=<name> user=<user> host=<host> password=<pwd>"` (Connection string for `psycopg2`).
 
 <br/>
 
-## File Systen Backend ##
+## File System Backend ##
 
 ```
 FilesystemHandler(base_log_dir, n_facets, sep, error_types)
