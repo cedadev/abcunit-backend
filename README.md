@@ -6,6 +6,18 @@ Storage backends for an ABCUnit Framework, logging success and failures of proce
 
 ## Database Backend ##
 
+To use this backend you will need to contact the JASMIN help desk (support@jasmin.ac.uk) and ask them to setup a postgresql database for you. Specify a name for the database and a username to login with. JASMIN support will get back to you with the user password and host name. 
+
+<br/>
+
+After you have got your databse, you'll need to export an environment variable called  `$ABCUNIT_DB_SETTINGS` and set it to a connection string for psycopg2;
+
+```
+ABCUNIT_DB_SETTINGS="dbname=<name> user=<user> host=<host> password=<pwd>"
+```
+
+The `DatabaseHandler` class looks like this;
+
 ```
 DatabaseHandler(error_types, table_name="results")
 ```
@@ -27,14 +39,12 @@ Connects to an existing database and creates a table to store results;
 
 <br/>
 
-Requires an environment variable `$ABCUNIT_DB_SETTINGS` to be set to `"dbname=<name> user=<user> host=<host> password=<pwd>"` (Connection string for `psycopg2`).
-
-<br/>
-
 ## File System Backend ##
 
+The `FileSystemHandler` class looks like this;
+
 ```
-FilesystemHandler(base_log_dir, n_facets, sep, error_types)
+FileSytemHandler(base_log_dir, n_facets, sep, error_types)
 ```
 
 Where;
