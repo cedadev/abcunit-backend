@@ -16,7 +16,7 @@ After you have got your databse, you'll need to export an environment variable c
 ABCUNIT_DB_SETTINGS="dbname=<name> user=<user> host=<host> password=<pwd>"
 ```
 
-The `DatabaseHandler` class looks like this;
+`DatabaseHandler` class construction looks like this;
 
 ```
 DatabaseHandler(error_types, table_name="results")
@@ -41,7 +41,7 @@ Connects to an existing database and creates a table to store results;
 
 ## File System Backend ##
 
-The `FileSystemHandler` class looks like this;
+`FileSystemHandler` class construction looks like this;
 
 ```
 FileSytemHandler(base_log_dir, n_facets, sep, error_types)
