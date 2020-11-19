@@ -10,13 +10,13 @@ To use this backend you will need to contact the JASMIN help desk (support@jasmi
 
 <br/>
 
-After you have got your databse, you'll need to export an environment variable called  `$ABCUNIT_DB_SETTINGS` and set it to a connection string for psycopg2;
+After you have got your database, you'll need to export an environment variable called  `$ABCUNIT_DB_SETTINGS` and set it to a connection string for `psycopg2`:
 
 ```
 ABCUNIT_DB_SETTINGS="dbname=<name> user=<user> host=<host> password=<pwd>"
 ```
 
-`DatabaseHandler` class construction looks like this;
+`DatabaseHandler` class construction looks like this:
 
 ```
 DatabaseHandler(error_types, table_name="results")
@@ -24,9 +24,9 @@ DatabaseHandler(error_types, table_name="results")
 
 Where;
  * `error_types` is a list of the string names of the different types of errors that you want to log
- *  `table_name` is the name of the table logs will be insert into
+ * `table_name` is the name of the table logs will be insert into
 
-Connects to an existing database and creates a table to store results;
+Connects to an existing database and creates a table to store results:
 
 ```
 <table_name> (id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL)
@@ -41,7 +41,7 @@ Connects to an existing database and creates a table to store results;
 
 ## File System Backend ##
 
-`FileSystemHandler` class construction looks like this;
+`FileSystemHandler` class construction looks like this:
 
 ```
 FileSytemHandler(base_log_dir, n_facets, sep, error_types)
@@ -53,7 +53,7 @@ Where;
  * `sep` is the separator used for a result identifier
  * `error_types` is a list of the string names of the different types of errors that you want to log
 
-Uses the file system to create log files marking success and failures, categorised by directory structure;
+Uses the file system to create log files marking success and failures, categorised by directory structure:
 
 ```
 <log_base_dir>/success/facet1/facet2/facet3
