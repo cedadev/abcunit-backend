@@ -15,7 +15,7 @@ setup(
     version=VERSION,
     description="Backend solution for abcunit success / failure logs",
     long_description=README,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author="Jonathan Haigh",
     author_email="jonathan.haigh@stfc.ac.uk",
     url="https://github.com/cedadev/abcunit-backend",
