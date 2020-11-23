@@ -2,7 +2,7 @@ import os
 from setuptools import setup
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(current_dir, 'README.md')).read()
+README = open(os.path.join(current_dir, 'README.rst')).read()
 REQUIRES_PYTHON = ">=3.5.0"
 LICENSE = open(os.path.join(current_dir, 'LICENSE')).read()
 VERSION = open(os.path.join(current_dir, 'backend', '__init__.py')).readline().split('"')[1]
@@ -14,7 +14,6 @@ setup(
     name="abcunit-backend",
     version=VERSION,
     description="Backend solution for abcunit success / failure logs",
-    long_description_content_type="text/markdown",
     long_description=README,
     author="Jonathan Haigh",
     author_email="jonathan.haigh@stfc.ac.uk",
