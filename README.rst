@@ -1,20 +1,15 @@
-.. role:: raw-html-m2r(raw)
-   :format: html
-
 
 abcunit-backend
 ===============
 
 Storage backends for an ABCUnit Framework, logging success and failures of process units.
 
-:raw-html-m2r:`<br/>`
 
 Database Backend
 ----------------
 
 To use this backend you will need to contact the JASMIN help desk (support@jasmin.ac.uk) and ask them to setup a postgresql database for you. Specify a name for the database and a username to login with. JASMIN support will get back to you with the user password and host name. 
 
-:raw-html-m2r:`<br/>`
 
 After you have got your database, you'll need to export an environment variable called  ``$ABCUNIT_DB_SETTINGS`` and set it to a connection string for ``psycopg2``\ :
 
@@ -53,7 +48,6 @@ Connects to an existing database and creates a table to store results:
      - &#8942;
 
 
-:raw-html-m2r:`<br/>`
 
 File System Backend
 -------------------
