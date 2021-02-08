@@ -6,21 +6,19 @@ from .base_handler import BaseHandler
 
 class FileSystemHandler(BaseHandler):
 
-    def __init__(self, base_log_dir, n_facets, sep, error_types):
+    def __init__(self, base_log_dir, n_facets, sep):
         """
         :param base_log_dir: (str) Path to top level directory for logs
         :param n_facets: (int) Number of facets used to describe each unit result
         :param sep: (str) Separator used for a result identifier
-        :param error_types: (str list) List of the string names of the different
-        types of errors that you want to log
         """
 
-        self.error_types = error_types
         self.n_facets = n_facets
         self.sep = sep
 
         self.success_dir = os.path.join(base_log_dir, 'success')
         self.failure_dir = os.path.join(base_log_dir, 'failure')
+
 
     def validate(func):
         """
@@ -32,8 +30,21 @@ class FileSystemHandler(BaseHandler):
             identifier = args[1]  # Assumes identifier is second argument
             if os.sep in identifier:
                 raise ValueError
+
             return func(*args, **kwargs)
+
         return validate_identifier
+
+
+    def _interpret_error_types(self):
+        """
+        :return: (set) Set of unique return types which aren't 'success'
+        """
+
+        error_types = [list_name for list_name in os.listdir(self.failure_dir) if os.path.isdir(os.path.join(self.failure_dir, list_name))]
+
+        return set(error_types)
+
 
     def _path_to_identifier(self, path):
         """
@@ -47,7 +58,9 @@ class FileSystemHandler(BaseHandler):
         # them to create the relative identifier
         path_arr = path.split(os.sep)
         identifier = self.sep.join(path_arr[-self.n_facets:])
+
         return identifier
+
 
     def _identifier_to_path(self, identifier, result):
         """
@@ -64,6 +77,7 @@ class FileSystemHandler(BaseHandler):
         else:
             return os.path.join(self.failure_dir, result, id_path)
 
+
     @validate
     def get_result(self, identifier):
         """
@@ -77,12 +91,14 @@ class FileSystemHandler(BaseHandler):
         if os.path.exists(path):
             return 'success'
 
-        for error in self.error_types:
+        error_types = self._interpret_error_types()
+        for error in error_types:
             path = self._identifier_to_path(identifier, error)
             if os.path.exists(path):
                 return error
 
         return None
+
 
     def get_all_results(self):
         """
@@ -101,6 +117,7 @@ class FileSystemHandler(BaseHandler):
 
         return results
 
+
     def get_successful_runs(self):
         """
         :return: (str list) Returns a list of the identifiers of all
@@ -109,7 +126,9 @@ class FileSystemHandler(BaseHandler):
 
         glob_pattern = os.path.join(self.success_dir, os.sep.join(['*' for _ in range(self.n_facets)]))
         files = glob.glob(glob_pattern)
+
         return [self._path_to_identifier(fname) for fname in files]
+
 
     def get_failed_runs(self):
         """
@@ -118,12 +137,14 @@ class FileSystemHandler(BaseHandler):
         """
 
         failures = {}
-        for error_type in self.error_types:
+        error_types = self._interpret_error_types()
+        for error_type in error_types:
             glob_pattern = os.path.join(self.failure_dir, error_type, os.sep.join(['*' for _ in range(self.n_facets)]))
             files = glob.glob(glob_pattern)
             failures[error_type] = [self._path_to_identifier(fname) for fname in files]
 
         return failures
+
 
     @validate
     def delete_result(self, identifier):
@@ -137,10 +158,12 @@ class FileSystemHandler(BaseHandler):
         if os.path.exists(path):
             os.unlink(path)
 
-        for error in self.error_types:
+        error_types = self._interpret_error_types()
+        for error in error_types:
             path = self._identifier_to_path(identifier, error)
             if os.path.exists(path):
                 os.unlink(path)
+        
 
     def delete_all_results(self):
         """
@@ -159,6 +182,7 @@ class FileSystemHandler(BaseHandler):
 
         for failure_file in failure_files:
             os.unlink(failure_file)
+        
 
     @validate
     def ran_successfully(self, identifier):
@@ -171,7 +195,9 @@ class FileSystemHandler(BaseHandler):
         """
 
         path = self._identifier_to_path(identifier, 'success')
+
         return os.path.exists(path)
+
 
     def count_results(self):
         """
@@ -180,12 +206,14 @@ class FileSystemHandler(BaseHandler):
 
         return len(self.get_all_results())
 
+
     def count_successes(self):
         """
         :return: (int) Number of successful result files
         """
 
         return len(self.get_successful_runs())
+
 
     def count_failures(self):
         """
@@ -196,7 +224,9 @@ class FileSystemHandler(BaseHandler):
         error_dict = self.get_failed_runs()
         for error in error_dict.keys():
             size += len(error_dict[error])
+        
         return size
+
 
     @validate
     def insert_success(self, identifier):
@@ -211,7 +241,10 @@ class FileSystemHandler(BaseHandler):
 
         if not os.path.isdir(dr):
             os.makedirs(dr)
-        open(path, 'w')  # empty success file
+        
+        with open(path, 'w') as writer:
+            writer.write(f'{identifier} ran successfully' )
+
 
     @validate
     def insert_failure(self, identifier, error_type):
@@ -220,8 +253,7 @@ class FileSystemHandler(BaseHandler):
         and error type parsed
 
         :param identifier: (str) Identifier of the job
-        :param error_type: (str) Result of the job, from the
-        error_types list
+        :param error_type: (str) Result of the job
         """
 
         path = self._identifier_to_path(identifier, error_type)
@@ -229,5 +261,6 @@ class FileSystemHandler(BaseHandler):
 
         if not os.path.isdir(dr):
             os.makedirs(dr)
+        
         with open(path, 'w') as writer:
-            writer.write(f'{error_type} has occurred!')
+            writer.write(f'{error_type} has occurred for {identifier}')

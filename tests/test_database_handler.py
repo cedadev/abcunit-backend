@@ -7,8 +7,7 @@ db_handler = None
 def setup_module():
     global db_handler
     print("SETTING UP")
-    db_handler = DataBaseHandler(['bad_data', 'bad_num', 'no_output'],
-                                 'backend_test_results')
+    db_handler = DataBaseHandler('backend_test_results')
     db_handler._delete_table()
     db_handler._create_table()
 
@@ -80,8 +79,7 @@ def test_get_failed_names():
 
     failed_results = {
         "bad_data": ["min/CMCC/CMCC-CM/r2i1p1/fGrazing"],
-        "bad_num": ["min/CMCC/CMCC-CM/r2i1p1/rGrowth"],
-        "no_output": []
+        "bad_num": ["min/CMCC/CMCC-CM/r2i1p1/rGrowth"]
     }
     assert(db_handler.get_failed_runs() == failed_results)
 
