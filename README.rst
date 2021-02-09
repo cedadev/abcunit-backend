@@ -21,12 +21,11 @@ After you have got your database, you'll need to export an environment variable 
 
 .. code-block::
 
-   DatabaseHandler(error_types, table_name="results")
+   DatabaseHandler(table_name="results")
 
-Where;
+Where
 
 
-* ``error_types`` is a list of the string names of the different types of errors that you want to log
 * ``table_name`` is the name of the table logs will be insert into
 
 Connects to an existing database and creates a table to store results:
@@ -56,7 +55,7 @@ File System Backend
 
 .. code-block::
 
-   FileSytemHandler(base_log_dir, n_facets, sep, error_types)
+   FileSytemHandler(base_log_dir, n_facets, sep)
 
 Where;
 
@@ -64,7 +63,6 @@ Where;
 * ``base_log_dir`` is the string path to top level directory for logs
 * ``n_facets`` is the number of facets used to describe each unit result
 * ``sep`` is the separator used for a result identifier
-* ``error_types`` is a list of the string names of the different types of errors that you want to log
 
 Uses the file system to create log files marking success and failures, categorised by directory structure:
 
