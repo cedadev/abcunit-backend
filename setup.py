@@ -4,7 +4,7 @@ from setuptools import setup
 current_dir = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(current_dir, 'README.rst')).read()
 REQUIRES_PYTHON = ">=3.5.0"
-VERSION = open(os.path.join(current_dir, 'backend', '__init__.py')).readline().split('"')[1]
+VERSION = open(os.path.join(current_dir, 'abcunit_backend', '__init__.py')).readline().split('"')[1]
 
 reqs = [line.strip() for line in open('requirements.txt')]
 dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
@@ -19,7 +19,7 @@ setup(
     url="https://github.com/cedadev/abcunit-backend",
     python_requires=REQUIRES_PYTHON,
     license="BSD 2-Clause License",
-    packages=["backend"],
+    packages=["abcunit_backend"],
     install_requires=reqs,
     extras_require={"dev": dev_reqs}
 )

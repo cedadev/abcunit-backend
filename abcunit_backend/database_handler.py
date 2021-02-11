@@ -5,15 +5,12 @@ from .base_handler import BaseHandler
 
 class DataBaseHandler(BaseHandler):
 
-    def __init__(self, error_types, table_name='results'):
+    def __init__(self, table_name='results'):
         """
-        :param error_types: (str list) List of the string names of the
-        different types of errors that you want to log
         :param table_name: (str) Optional string name of the table logs
         will be insert into (default is 'results')
         """
 
-        self.error_types = error_types
         connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
         if not connection_info:
             raise KeyError('Please create environment variable ABCUNIT_DB_SETTINGS'
@@ -30,6 +27,7 @@ class DataBaseHandler(BaseHandler):
         self.table_name = table_name
         self._create_table()
 
+
     def _create_table(self):
         """
         Creates a table called <self.table_name> with primary key id varchar(255)
@@ -40,6 +38,7 @@ class DataBaseHandler(BaseHandler):
                          '(id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL);')
         self.conn.commit()
 
+
     def _delete_table(self):
         """
         Drops the database table
@@ -47,6 +46,7 @@ class DataBaseHandler(BaseHandler):
 
         self.cur.execute(f"DROP TABLE {self.table_name};")
         self.conn.commit()
+
 
     def get_result(self, identifier):
         """
@@ -62,7 +62,9 @@ class DataBaseHandler(BaseHandler):
         self.cur.execute(query)
         if self.cur.rowcount > 0:
             return self.cur.fetchone()[0]
+
         return None
+
 
     def get_all_results(self):
         """
@@ -75,7 +77,9 @@ class DataBaseHandler(BaseHandler):
         result_dict = {}
         for (name, result) in self.cur:
             result_dict[name] = result
+
         return result_dict
+
 
     def get_successful_runs(self):
         """
@@ -86,7 +90,9 @@ class DataBaseHandler(BaseHandler):
         query = f"SELECT id FROM {self.table_name} " \
                 "WHERE result='success';"
         self.cur.execute(query)
+
         return [name[0] for name in self.cur]
+
 
     def get_failed_runs(self):
         """
@@ -95,12 +101,15 @@ class DataBaseHandler(BaseHandler):
         """
 
         query = f"SELECT id, result FROM {self.table_name} " \
-                "WHERE result<>'success';"
+                "WHERE result<>'success';"   
         self.cur.execute(query)
-        failures = dict([(key, []) for key in self.error_types])
+        failures = {}
         for (name, result) in self.cur:
+            failures.setdefault(result, [])
             failures[result].append(name)
+
         return failures
+
 
     def delete_result(self, identifier):
         """
@@ -115,6 +124,7 @@ class DataBaseHandler(BaseHandler):
         self.cur.execute(query)
         self.conn.commit()
 
+
     def delete_all_results(self):
         """
         Deletes all entries from the table
@@ -122,6 +132,7 @@ class DataBaseHandler(BaseHandler):
 
         self.cur.execute(f"DELETE FROM {self.table_name};")
         self.conn.commit()
+
 
     def ran_successfully(self, identifier):
         """
@@ -138,7 +149,9 @@ class DataBaseHandler(BaseHandler):
         result = self.cur.fetchone()
         if result is not None:
             return result[0] == 'success'
+
         return False
+
 
     def count_results(self):
         """
@@ -146,7 +159,9 @@ class DataBaseHandler(BaseHandler):
         """
 
         self.cur.execute(f"SELECT COUNT(*) FROM {self.table_name};")
+
         return self.cur.fetchone()[0]
+
 
     def count_successes(self):
         """
@@ -156,7 +171,9 @@ class DataBaseHandler(BaseHandler):
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
                 "WHERE result='success';"
         self.cur.execute(query)
+
         return self.cur.fetchone()[0]
+
 
     def count_failures(self):
         """
@@ -166,7 +183,9 @@ class DataBaseHandler(BaseHandler):
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
                 "WHERE result<>'success';"
         self.cur.execute(query)
+
         return self.cur.fetchone()[0]
+
 
     def insert_success(self, identifier):
         """
@@ -181,20 +200,21 @@ class DataBaseHandler(BaseHandler):
         self.cur.execute(query)
         self.conn.commit()
 
+
     def insert_failure(self, identifier, error_type):
         """
         Inserts an entry into the table with a given identifier
-        and result from error_types
+        and erroneous result
 
         :param identifier: (str) Identifier of the job
-        :param error_type: (str) Result of the job, from the
-        error_types list
+        :param error_type: (str) Result of the job
         """
 
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', '{error_type}');"
         self.cur.execute(query)
         self.conn.commit()
+        
 
     def close(self):
         """

@@ -1,20 +1,28 @@
+import os
+import pathlib
 import pytest
 from backend.file_system_handler import FileSystemHandler
 
 fs_handler = None
-base_dir = '/home/users/jhaigh0/work/abcunit_backend/abcunit-backend/logs'
+base_dir = os.path.join(pathlib.Path().absolute(), 'logs')
 
 
 def setup_module():
     global fs_handler
     print("SETTING UP")
-    fs_handler = FileSystemHandler(base_dir, 5, '.',
-                                   ['bad_data', 'bad_num', 'no_output'])
+    fs_handler = FileSystemHandler(base_dir, 5, '.',)
 
 
 def teardown_module():
     print("TEARING DOWN")
     fs_handler.delete_all_results()
+
+
+def test_interpret_error_types():
+    _unique_setup()
+
+    interpreted_error_types = fs_handler._interpret_error_types()
+    assert(interpreted_error_types == {'bad_data', 'bad_num'})
 
 
 def test_success_inserted():
@@ -77,8 +85,7 @@ def test_get_failed_names():
 
     failed_results = {
         "bad_data": ["min.CMCC.CMCC-CM.r2i1p1.fGrazing"],
-        "bad_num": ["min.CMCC.CMCC-CM.r2i1p1.rGrowth"],
-        "no_output": []
+        "bad_num": ["min.CMCC.CMCC-CM.r2i1p1.rGrowth"]
     }
     assert(fs_handler.get_failed_runs() == failed_results)
 
