@@ -1,7 +1,7 @@
 import os
 import pathlib
 import pytest
-from backend.file_system_handler import FileSystemHandler
+from abcunit_backend.file_system_handler import FileSystemHandler
 
 fs_handler = None
 base_dir = os.path.join(pathlib.Path().absolute(), 'logs')

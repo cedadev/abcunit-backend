@@ -1,5 +1,5 @@
 import pytest
-from backend.database_handler import DataBaseHandler
+from abcunit_backend.database_handler import DataBaseHandler
 
 db_handler = None
 
