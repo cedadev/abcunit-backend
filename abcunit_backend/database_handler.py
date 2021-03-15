@@ -11,21 +11,27 @@ class DataBaseHandler(BaseHandler):
         will be insert into (default is 'results')
         """
 
-        connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
-        if not connection_info:
+        self.connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
+        if not self.connection_info:
             raise KeyError('Please create environment variable ABCUNIT_DB_SETTINGS'
                            'in for format of "dbname=<db_name> user=<user_name>'
                            'host=<host_name> password=<password>"')
+        
+        self._test_connection()
+        self.table_name = table_name
+        self._create_table()
+
+
+    def _test_connection(self):
         try:
-            self.conn = psycopg2.connect(connection_info)
+            conn = psycopg2.connect(self.connection_info)
         except psycopg2.Error as err:
             print(err)
             raise ValueError('ABCUNIT_DB_SETTINGS string is incorrect. Should be'
                              'in for format of "dbname=<db_name> user=<user_name>'
                              'host=<host_name> password=<password>"')
-        self.cur = self.conn.cursor()
-        self.table_name = table_name
-        self._create_table()
+
+        conn.close()
 
 
     def _create_table(self):
@@ -34,9 +40,11 @@ class DataBaseHandler(BaseHandler):
         and result varchar(255), if one does not already exist
          """
 
-        self.cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}'
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}'
                          '(id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL);')
-        self.conn.commit()
+                conn.commit()
 
 
     def _delete_table(self):
@@ -44,8 +52,10 @@ class DataBaseHandler(BaseHandler):
         Drops the database table
         """
 
-        self.cur.execute(f"DROP TABLE {self.table_name};")
-        self.conn.commit()
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"DROP TABLE {self.table_name};")
+                conn.commit()
 
 
     def get_result(self, identifier):
@@ -59,9 +69,12 @@ class DataBaseHandler(BaseHandler):
 
         query = f"SELECT result FROM {self.table_name} " \
                 f"WHERE id='{identifier}';"
-        self.cur.execute(query)
-        if self.cur.rowcount > 0:
-            return self.cur.fetchone()[0]
+        
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                if cur.rowcount > 0:
+                    return cur.fetchone()[0]
 
         return None
 
@@ -73,10 +86,13 @@ class DataBaseHandler(BaseHandler):
         """
 
         query = f"SELECT * FROM {self.table_name}"
-        self.cur.execute(query)
-        result_dict = {}
-        for (name, result) in self.cur:
-            result_dict[name] = result
+
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                result_dict = {}
+                for (name, result) in cur:
+                    result_dict[name] = result
 
         return result_dict
 
@@ -89,9 +105,12 @@ class DataBaseHandler(BaseHandler):
 
         query = f"SELECT id FROM {self.table_name} " \
                 "WHERE result='success';"
-        self.cur.execute(query)
+        
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
 
-        return [name[0] for name in self.cur]
+                return [name[0] for name in cur]
 
 
     def get_failed_runs(self):
@@ -101,12 +120,15 @@ class DataBaseHandler(BaseHandler):
         """
 
         query = f"SELECT id, result FROM {self.table_name} " \
-                "WHERE result<>'success';"   
-        self.cur.execute(query)
-        failures = {}
-        for (name, result) in self.cur:
-            failures.setdefault(result, [])
-            failures[result].append(name)
+                "WHERE result<>'success';"
+
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur: 
+                cur.execute(query)
+                failures = {}
+                for (name, result) in cur:
+                    failures.setdefault(result, [])
+                    failures[result].append(name)
 
         return failures
 
@@ -121,8 +143,11 @@ class DataBaseHandler(BaseHandler):
 
         query = f"DELETE FROM {self.table_name} " \
                 f"WHERE id='{identifier}';"
-        self.cur.execute(query)
-        self.conn.commit()
+
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                conn.commit()
 
 
     def delete_all_results(self):
@@ -130,8 +155,10 @@ class DataBaseHandler(BaseHandler):
         Deletes all entries from the table
         """
 
-        self.cur.execute(f"DELETE FROM {self.table_name};")
-        self.conn.commit()
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"DELETE FROM {self.table_name};")
+                conn.commit()
 
 
     def ran_successfully(self, identifier):
@@ -145,10 +172,13 @@ class DataBaseHandler(BaseHandler):
 
         query = f"SELECT result FROM {self.table_name} " \
                 f"WHERE id='{identifier}';"
-        self.cur.execute(query)
-        result = self.cur.fetchone()
-        if result is not None:
-            return result[0] == 'success'
+
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                result = cur.fetchone()
+                if result is not None:
+                    return result[0] == 'success'
 
         return False
 
@@ -158,9 +188,11 @@ class DataBaseHandler(BaseHandler):
         :return: (int) Number of results in the table
         """
 
-        self.cur.execute(f"SELECT COUNT(*) FROM {self.table_name};")
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT COUNT(*) FROM {self.table_name};")
 
-        return self.cur.fetchone()[0]
+                return cur.fetchone()[0]
 
 
     def count_successes(self):
@@ -170,9 +202,12 @@ class DataBaseHandler(BaseHandler):
 
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
                 "WHERE result='success';"
-        self.cur.execute(query)
 
-        return self.cur.fetchone()[0]
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+
+                return cur.fetchone()[0]
 
 
     def count_failures(self):
@@ -182,9 +217,12 @@ class DataBaseHandler(BaseHandler):
 
         query = f"SELECT COUNT(*) FROM {self.table_name} " \
                 "WHERE result<>'success';"
-        self.cur.execute(query)
 
-        return self.cur.fetchone()[0]
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+
+                return cur.fetchone()[0]
 
 
     def insert_success(self, identifier):
@@ -197,8 +235,11 @@ class DataBaseHandler(BaseHandler):
 
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', 'success');"
-        self.cur.execute(query)
-        self.conn.commit()
+
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                conn.commit()
 
 
     def insert_failure(self, identifier, error_type):
@@ -212,14 +253,9 @@ class DataBaseHandler(BaseHandler):
 
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', '{error_type}');"
-        self.cur.execute(query)
-        self.conn.commit()
-        
 
-    def close(self):
-        """
-        Close connection with the database
-        """
+        with psycopg2.connect(self.connection_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                conn.commit()
 
-        self.cur.close()
-        self.conn.close()
