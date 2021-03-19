@@ -9,6 +9,14 @@ VERSION = open(os.path.join(current_dir, 'abcunit_backend', '__init__.py')).read
 reqs = [line.strip() for line in open('requirements.txt')]
 dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
 
+docs_requirements = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "nbsphinx",
+    "pandoc",
+    "ipython"
+]
+
 setup(
     name="abcunit-backend",
     version=VERSION,
@@ -21,5 +29,5 @@ setup(
     license="BSD 2-Clause License",
     packages=["abcunit_backend"],
     install_requires=reqs,
-    extras_require={"dev": dev_reqs}
+    extras_require={"dev": dev_reqs, "docs": docs_requirements}
 )

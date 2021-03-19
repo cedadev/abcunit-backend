@@ -55,9 +55,3 @@ class BaseHandler(object):
     def insert_failure(self, identifier, error_type):
         """ Adds a failed result """
         raise NotImplementedError
-
-    def close(self):
-        """ Optional method for implementations that
-        need to close a connection (e.g a database).
-        Runs 'pass' by default """
-        pass
