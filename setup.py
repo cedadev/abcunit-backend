@@ -14,7 +14,8 @@ docs_requirements = [
     "sphinx-rtd-theme",
     "nbsphinx",
     "pandoc",
-    "ipython"
+    "ipython",
+    "m2r"
 ]
 
 setup(
