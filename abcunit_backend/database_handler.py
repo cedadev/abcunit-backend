@@ -7,8 +7,7 @@ class DataBaseHandler(BaseHandler):
 
     def __init__(self, table_name='results'):
         """
-        :param table_name: (str) Optional string name of the table logs
-        will be insert into (default is 'results')
+        :param table_name: (str) Optional string name of the table logs will be insert into (default is 'results')
         """
 
         self.connection_info = os.environ.get("ABCUNIT_DB_SETTINGS")
@@ -81,8 +80,7 @@ class DataBaseHandler(BaseHandler):
 
     def get_all_results(self):
         """
-        :return: (dict) Dictionary of all job identifiers mapped to
-        their respective results
+        :return: (dict) Dictionary of all job identifiers mapped to their respective results
         """
 
         query = f"SELECT * FROM {self.table_name}"
@@ -99,8 +97,7 @@ class DataBaseHandler(BaseHandler):
 
     def get_successful_runs(self):
         """
-        :return: (str list) Returns a list of the identifiers of all
-        successful runs
+        :return: (str list) Returns a list of the identifiers of all successful runs
         """
 
         query = f"SELECT id FROM {self.table_name} " \
@@ -115,8 +112,7 @@ class DataBaseHandler(BaseHandler):
 
     def get_failed_runs(self):
         """
-        :return: (dict) Dictionary of error types mapped to
-        lists of job identifiers which result in them
+        :return: (dict) Dictionary of error types mapped to lists of job identifiers which result in them
         """
 
         query = f"SELECT id, result FROM {self.table_name} " \

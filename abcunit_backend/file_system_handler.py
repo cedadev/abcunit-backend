@@ -102,8 +102,7 @@ class FileSystemHandler(BaseHandler):
 
     def get_all_results(self):
         """
-        :return: (dict) Dictionary of all job identifiers mapped to
-        their respective results
+        :return: (dict) Dictionary of all job identifiers mapped to their respective results
         """
 
         results = {}
@@ -120,8 +119,7 @@ class FileSystemHandler(BaseHandler):
 
     def get_successful_runs(self):
         """
-        :return: (str list) Returns a list of the identifiers of all
-        successful runs
+        :return: (str list) Returns a list of the identifiers of all successful runs
         """
 
         glob_pattern = os.path.join(self.success_dir, os.sep.join(['*' for _ in range(self.n_facets)]))
@@ -132,8 +130,7 @@ class FileSystemHandler(BaseHandler):
 
     def get_failed_runs(self):
         """
-        :return: (dict) Dictionary of error types mapped to
-        lists of job identifiers which result in them
+        :return: (dict) Dictionary of error types mapped to lists of job identifiers which result in them
         """
 
         failures = {}
