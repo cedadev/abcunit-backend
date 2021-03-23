@@ -12,7 +12,16 @@ highlight_language = 'python'
 pygments_style = 'sphinx'
 
 
-extensions = ['m2r2']
+extensions = [
+    "m2r2",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.coverage",
+    "sphinx.ext.todo",
+    "sphinx.ext.autosectionlabel"
+]
 
 source_suffix = ['.rst', '.md']
 
