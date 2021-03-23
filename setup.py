@@ -15,7 +15,7 @@ docs_requirements = [
     "nbsphinx",
     "pandoc",
     "ipython",
-    "m2r"
+    "m2r2"
 ]
 
 setup(

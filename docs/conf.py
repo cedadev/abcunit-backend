@@ -12,11 +12,11 @@ highlight_language = 'python'
 pygments_style = 'sphinx'
 
 
-extensions = ['m2r']
+extensions = ['m2r2']
 
 source_suffix = ['.rst', '.md']
 
-master_doc = "index"
+master_doc = 'index'
 
 exclude_patterns = ['_build', 'sphinx-enki-info.txt']
 
