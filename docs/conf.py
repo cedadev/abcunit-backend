@@ -13,14 +13,14 @@ pygments_style = 'sphinx'
 
 
 extensions = [
-    "m2r2",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.coverage",
-    "sphinx.ext.todo",
-    "sphinx.ext.autosectionlabel"
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.coverage',
+    'sphinx.ext.todo',
+    'sphinx.ext.autosectionlabel',
+    'm2r2'
 ]
 
 source_suffix = ['.rst', '.md']
