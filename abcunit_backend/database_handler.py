@@ -5,6 +5,9 @@ from .base_handler import BaseHandler
 
 class DataBaseHandler(BaseHandler):
 
+    _max_id_length = 255
+    _max_result_length = 255
+    
     def __init__(self, table_name='results'):
         """
         :param table_name: (str) Optional string name of the table logs will be insert into (default is 'results')
@@ -37,12 +40,13 @@ class DataBaseHandler(BaseHandler):
         """
         Creates a table called <self.table_name> with primary key id varchar(255)
         and result varchar(255), if one does not already exist
-         """
+        """
 
         with psycopg2.connect(self.connection_info) as conn:
             with conn.cursor() as cur:
                 cur.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name}'
-                         '(id varchar(255) PRIMARY KEY, result varchar(255) NOT NULL);')
+                            f'(id varchar({self._max_id_length}) PRIMARY KEY, '
+                            f'result varchar({self._max_result_length}) NOT NULL);')
                 conn.commit()
 
 
@@ -229,6 +233,9 @@ class DataBaseHandler(BaseHandler):
         :param identifier: (str) Identifier of the job
         """
 
+        if self.get_result(identifier):
+            self.delete_result(identifier)
+
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', 'success');"
 
@@ -238,7 +245,7 @@ class DataBaseHandler(BaseHandler):
                 conn.commit()
 
 
-    def insert_failure(self, identifier, error_type):
+    def insert_failure(self, identifier, error_type='failure'):
         """
         Inserts an entry into the table with a given identifier
         and erroneous result
@@ -247,6 +254,11 @@ class DataBaseHandler(BaseHandler):
         :param error_type: (str) Result of the job
         """
 
+        if self.get_result(identifier):
+            self.delete_result(identifier)
+
+        error_type = error_type[:self._max_result_length]
+        
         query = f"INSERT INTO {self.table_name} " \
                 f"VALUES ('{identifier}', '{error_type}');"
 
